@@ -81,19 +81,35 @@ pub fn from_str<const A: usize>(s: &str) -> Result<u128, ParseIntError> {
 mod tests {
     use super::*;
     #[test]
-    fn test_encode() {
-        let varint = Varint::from(0x10000000000000000);
-        assert_eq!([1, 0, 0, 8], varint.0);
-    }
-    #[test]
-    fn test_decode() {
-        assert_eq!(0x10000000000000000, Varint([1, 0, 0, 8]).u128());
-    }
-    #[test]
-    fn test_decode_max() {
+    fn from() {
+        assert_eq!(Varint::from(0x00).0, [0x00]);
+        assert_eq!(Varint::from(0x01).0, [0x00]);
+        assert_eq!(Varint::from(0x10).0, [0x10]);
+        assert_eq!(Varint::from(0x11).0, [0x10]);
+        assert_eq!(Varint::from(0x10000000000000000000000000000000).0, [0x1f]);
+        assert_eq!(Varint::from(0x00).0, [0x00, 0x00]);
+        assert_eq!(Varint::from(0x01).0, [0x01, 0x00]);
+        assert_eq!(Varint::from(0x10).0, [0x10, 0x00]);
+        assert_eq!(Varint::from(0x11).0, [0x11, 0x00]);
         assert_eq!(
-            0xfffffff0000000000000000000000000,
-            Varint([0xff, 0xff, 0xff, 0xff]).u128()
+            Varint::from(0x10000000000000000000000000000000).0,
+            [0x10, 0x0f]
+        );
+    }
+    #[test]
+    fn u128() {
+        assert_eq!(Varint([0x00]).u128(), 0x00);
+        assert_eq!(Varint([0x01]).u128(), 0x00);
+        assert_eq!(Varint([0x10]).u128(), 0x10);
+        assert_eq!(Varint([0x11]).u128(), 0x1000);
+        assert_eq!(Varint([0x1f]).u128(), 0x10000000000000000000000000000000);
+        assert_eq!(Varint([0x00, 0x00]).u128(), 0x00);
+        assert_eq!(Varint([0x01, 0x00]).u128(), 0x01);
+        assert_eq!(Varint([0x10, 0x00]).u128(), 0x10);
+        assert_eq!(Varint([0x11, 0x00]).u128(), 0x11);
+        assert_eq!(
+            Varint([0x10, 0x0f]).u128(),
+            0x10000000000000000000000000000000
         );
     }
     #[test]
