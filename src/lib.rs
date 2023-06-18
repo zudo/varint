@@ -331,4 +331,12 @@ mod tests {
         assert_eq!(b % a, Varint::from(0));
         assert_eq!(b % b, Varint::from(0));
     }
+    #[test]
+    fn bit() {
+        let a: u128 = 1;
+        let b = vint![a, 2];
+        assert_eq!(b | a, Varint::from(1));
+        assert_eq!(b & a, Varint::from(1));
+        assert_eq!(b ^ a, Varint::from(0));
+    }
 }
