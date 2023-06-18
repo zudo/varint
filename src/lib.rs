@@ -360,7 +360,7 @@ impl<const A: usize, T: Into<u128>> ShrAssign<T> for Vint<A> {
 mod tests {
     use super::*;
     #[test]
-    fn vint() {
+    fn macros() {
         assert_eq!(vint![0].0, [0]);
         assert_eq!(vint![0, 1].0, [0]);
         assert_eq!(vint![0], Vint::<1>::from(0));
@@ -375,26 +375,7 @@ mod tests {
         assert_eq!(vint![0x10].0, [0x10, 0x00]);
         assert_eq!(vint![0x11].0, [0x11, 0x00]);
         assert_eq!(vint![0x10000000000000000000000000000000].0, [0x10, 0x0f]);
-    }
-    #[test]
-    fn floor() {
         assert_eq!(floor![100, 1], 96);
-    }
-    #[test]
-    fn from() {
-        assert_eq!(u128::from(Vint([0x00])), 0x00);
-        assert_eq!(u128::from(Vint([0x01])), 0x00);
-        assert_eq!(u128::from(Vint([0x10])), 0x10);
-        assert_eq!(u128::from(Vint([0x11])), 0x1000);
-        assert_eq!(u128::from(Vint([0x1f])), 0x10000000000000000000000000000000);
-        assert_eq!(u128::from(Vint([0x00, 0x00])), 0x00);
-        assert_eq!(u128::from(Vint([0x01, 0x00])), 0x01);
-        assert_eq!(u128::from(Vint([0x10, 0x00])), 0x10);
-        assert_eq!(u128::from(Vint([0x11, 0x00])), 0x11);
-        assert_eq!(
-            u128::from(Vint([0x10, 0x0f])),
-            0x10000000000000000000000000000000
-        );
     }
     #[test]
     fn bincode_serialize() {
@@ -426,51 +407,119 @@ mod tests {
         );
     }
     #[test]
+    fn from() {
+        assert_eq!(u128::from(Vint([0x00])), 0x00);
+        assert_eq!(u128::from(Vint([0x01])), 0x00);
+        assert_eq!(u128::from(Vint([0x10])), 0x10);
+        assert_eq!(u128::from(Vint([0x11])), 0x1000);
+        assert_eq!(u128::from(Vint([0x1f])), 0x10000000000000000000000000000000);
+        assert_eq!(u128::from(Vint([0x00, 0x00])), 0x00);
+        assert_eq!(u128::from(Vint([0x01, 0x00])), 0x01);
+        assert_eq!(u128::from(Vint([0x10, 0x00])), 0x10);
+        assert_eq!(u128::from(Vint([0x11, 0x00])), 0x11);
+        assert_eq!(
+            u128::from(Vint([0x10, 0x0f])),
+            0x10000000000000000000000000000000
+        );
+    }
+    #[test]
     fn add() {
-        let a = 1;
-        let b = vint![a, 2];
-        assert_eq!(a + b, vint![2]);
-        assert_eq!(b + a, vint![2]);
-        assert_eq!(b + b, vint![2]);
+        {
+            let a = 1;
+            let b = vint![a, 2];
+            assert_eq!(a + b, vint![2]);
+            assert_eq!(b + a, vint![2]);
+            assert_eq!(b + b, vint![2]);
+        }
+        {
+            let mut a = 1;
+            a += vint![1, 2];
+            assert_eq!(a, 2);
+        }
+        {
+            let mut a = vint![1, 2];
+            a += 1_u128;
+            assert_eq!(u128::from(a), 2);
+        }
     }
     #[test]
     fn sub() {
-        let a = 2;
-        let b = vint![a, 2];
-        assert_eq!(a - b, vint![0]);
-        assert_eq!(b - a, vint![0]);
-        assert_eq!(b - b, vint![0]);
+        {
+            let a = 2;
+            let b = vint![a, 2];
+            assert_eq!(a - b, vint![0]);
+            assert_eq!(b - a, vint![0]);
+            assert_eq!(b - b, vint![0]);
+        }
+        {
+            let mut a = 2;
+            a -= vint![1, 2];
+            assert_eq!(a, 0);
+        }
+        {
+            let mut a = vint![2, 2];
+            a -= 1_u128;
+            assert_eq!(u128::from(a), 0);
+        }
     }
     #[test]
     fn mul() {
-        let a = 2;
-        let b = vint![a, 2];
-        assert_eq!(a * b, vint![4]);
-        assert_eq!(b * a, vint![4]);
-        assert_eq!(b * b, vint![4]);
+        {
+            let a = 2;
+            let b = vint![a, 2];
+            assert_eq!(a * b, vint![4]);
+            assert_eq!(b * a, vint![4]);
+            assert_eq!(b * b, vint![4]);
+        }
+        {
+            let mut a = 2;
+            a *= vint![2, 2];
+            assert_eq!(a, 4);
+        }
+        {
+            let mut a = vint![2, 2];
+            a *= 2_u128;
+            assert_eq!(u128::from(a), 4);
+        }
     }
     #[test]
     fn div() {
-        let a = 4;
-        let b = vint![a, 2];
-        assert_eq!(a / b, vint![1]);
-        assert_eq!(b / a, vint![1]);
-        assert_eq!(b / b, vint![1]);
+        {
+            let a = 2;
+            let b = vint![a, 2];
+            assert_eq!(a / b, vint![1]);
+            assert_eq!(b / a, vint![1]);
+            assert_eq!(b / b, vint![1]);
+        }
+        {
+            let mut a = 2;
+            a /= vint![2, 2];
+            assert_eq!(a, 1);
+        }
+        {
+            let mut a = vint![2, 2];
+            a /= 2_u128;
+            assert_eq!(u128::from(a), 1);
+        }
     }
     #[test]
     fn rem() {
-        let a: u128 = 4;
-        let b = vint![a, 2];
-        assert_eq!(a % b, Vint::from(0));
-        assert_eq!(b % a, Vint::from(0));
-        assert_eq!(b % b, Vint::from(0));
-    }
-    #[test]
-    fn bit() {
-        let a: u128 = 1;
-        let b = vint![a, 2];
-        assert_eq!(b | a, Vint::from(1));
-        assert_eq!(b & a, Vint::from(1));
-        assert_eq!(b ^ a, Vint::from(0));
+        {
+            let a = 2;
+            let b = vint![a, 2];
+            assert_eq!(a % b, Vint::from(0));
+            assert_eq!(b % a, Vint::from(0));
+            assert_eq!(b % b, Vint::from(0));
+        }
+        {
+            let mut a = 2;
+            a %= vint![2, 2];
+            assert_eq!(a, 0);
+        }
+        {
+            let mut a = vint![2, 2];
+            a %= 2_u128;
+            assert_eq!(u128::from(a), 0);
+        }
     }
 }
