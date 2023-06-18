@@ -352,13 +352,6 @@ mod tests {
         assert_eq!(vint![0, 1].0, [0]);
         assert_eq!(vint![0], Vint::<1>::from(0));
         assert_eq!(vint![0, 1], Vint::from(0));
-    }
-    #[test]
-    fn floor() {
-        assert_eq!(floor![100, 1], 96);
-    }
-    #[test]
-    fn new() {
         assert_eq!(vint![0x00].0, [0x00]);
         assert_eq!(vint![0x01].0, [0x00]);
         assert_eq!(vint![0x10].0, [0x10]);
@@ -371,7 +364,11 @@ mod tests {
         assert_eq!(vint![0x10000000000000000000000000000000].0, [0x10, 0x0f]);
     }
     #[test]
-    fn int() {
+    fn floor() {
+        assert_eq!(floor![100, 1], 96);
+    }
+    #[test]
+    fn from() {
         assert_eq!(u128::from(Vint([0x00])), 0x00);
         assert_eq!(u128::from(Vint([0x01])), 0x00);
         assert_eq!(u128::from(Vint([0x10])), 0x10);
