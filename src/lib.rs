@@ -14,8 +14,11 @@ use std::ops::Sub;
 use std::usize;
 #[macro_export]
 macro_rules! vint {
+    ($value:expr) => {{
+        Varint::new($value as u128)
+    }};
     ($value:expr, $size:expr) => {{
-        Varint::<$size>::from($value as u128)
+        Varint::<$size>::new($value as u128)
     }};
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -67,7 +70,7 @@ impl<const A: usize> Varint<A> {
 }
 impl<const A: usize> From<u128> for Varint<A> {
     fn from(value: u128) -> Self {
-        Varint::new(value)
+        vint![value]
     }
 }
 impl<const A: usize> From<Varint<A>> for u128 {
@@ -78,31 +81,31 @@ impl<const A: usize> From<Varint<A>> for u128 {
 impl<const A: usize, T: Into<u128>> Add<T> for Varint<A> {
     type Output = Varint<A>;
     fn add(self, other: T) -> Varint<A> {
-        Varint::new(self.int() + other.into())
+        vint![self.int() + other.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Sub<T> for Varint<A> {
     type Output = Varint<A>;
     fn sub(self, other: T) -> Varint<A> {
-        Varint::new(self.int() - other.into())
+        vint![self.int() - other.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Mul<T> for Varint<A> {
     type Output = Varint<A>;
     fn mul(self, other: T) -> Varint<A> {
-        Varint::new(self.int() * other.into())
+        vint![self.int() * other.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Div<T> for Varint<A> {
     type Output = Varint<A>;
     fn div(self, other: T) -> Varint<A> {
-        Varint::new(self.int() / other.into())
+        vint![self.int() / other.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Rem<T> for Varint<A> {
     type Output = Varint<A>;
     fn rem(self, other: T) -> Varint<A> {
-        Varint::new(self.int() % other.into())
+        vint![self.int() % other.into()]
     }
 }
 impl<const A: usize> fmt::Display for Varint<A> {
@@ -144,7 +147,12 @@ impl<'de, const A: usize> Deserialize<'de> for Varint<A> {
 mod tests {
     use super::*;
     #[test]
-    fn from() {
+    fn vint() {
+        assert_eq!(vint![0], Varint::<1>::new(0));
+        assert_eq!(vint![0, 1], Varint::new(0));
+    }
+    #[test]
+    fn new() {
         assert_eq!(Varint::new(0x00).0, [0x00]);
         assert_eq!(Varint::new(0x01).0, [0x00]);
         assert_eq!(Varint::new(0x10).0, [0x10]);
@@ -160,7 +168,7 @@ mod tests {
         );
     }
     #[test]
-    fn u128() {
+    fn int() {
         assert_eq!(Varint([0x00]).int(), 0x00);
         assert_eq!(Varint([0x01]).int(), 0x00);
         assert_eq!(Varint([0x10]).int(), 0x10);
@@ -209,27 +217,27 @@ mod tests {
     }
     #[test]
     fn add() {
-        let a = Varint::<2>::new(1);
-        assert_eq!(a + a, Varint::new(2));
+        let a = vint![1, 2];
+        assert_eq!(a + a, vint![2]);
     }
     #[test]
     fn sub() {
-        let a = Varint::<2>::new(2);
-        assert_eq!(a - a, Varint::new(0));
+        let a = vint![2, 2];
+        assert_eq!(a - a, vint![0]);
     }
     #[test]
     fn mul() {
-        let a = Varint::<2>::new(2);
-        assert_eq!(a * a, Varint::new(4));
+        let a = vint![2, 2];
+        assert_eq!(a * a, vint![4]);
     }
     #[test]
     fn div() {
-        let a = Varint::<2>::new(4);
-        assert_eq!(a / a, Varint::new(1));
+        let a = vint![4, 2];
+        assert_eq!(a / a, vint![1]);
     }
     #[test]
     fn rem() {
-        let a = Varint::<2>::new(4);
+        let a = vint![4, 2];
         assert_eq!(a % a, Varint::from(0));
     }
 }
