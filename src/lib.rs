@@ -71,7 +71,7 @@ impl<const A: usize> Varint<A> {
         u128::from_be_bytes(bytes)
     }
     pub fn floor(u: u128) -> u128 {
-        Varint::<A>::new(u).int()
+        vint![u, A].int()
     }
 }
 impl<const A: usize> From<u128> for Varint<A> {
@@ -229,19 +229,16 @@ mod tests {
     }
     #[test]
     fn new() {
-        assert_eq!(Varint::new(0x00).0, [0x00]);
-        assert_eq!(Varint::new(0x01).0, [0x00]);
-        assert_eq!(Varint::new(0x10).0, [0x10]);
-        assert_eq!(Varint::new(0x11).0, [0x10]);
-        assert_eq!(Varint::new(0x10000000000000000000000000000000).0, [0x1f]);
-        assert_eq!(Varint::new(0x00).0, [0x00, 0x00]);
-        assert_eq!(Varint::new(0x01).0, [0x01, 0x00]);
-        assert_eq!(Varint::new(0x10).0, [0x10, 0x00]);
-        assert_eq!(Varint::new(0x11).0, [0x11, 0x00]);
-        assert_eq!(
-            Varint::new(0x10000000000000000000000000000000).0,
-            [0x10, 0x0f]
-        );
+        assert_eq!(vint![0x00].0, [0x00]);
+        assert_eq!(vint![0x01].0, [0x00]);
+        assert_eq!(vint![0x10].0, [0x10]);
+        assert_eq!(vint![0x11].0, [0x10]);
+        assert_eq!(vint![0x10000000000000000000000000000000].0, [0x1f]);
+        assert_eq!(vint![0x00].0, [0x00, 0x00]);
+        assert_eq!(vint![0x01].0, [0x01, 0x00]);
+        assert_eq!(vint![0x10].0, [0x10, 0x00]);
+        assert_eq!(vint![0x11].0, [0x11, 0x00]);
+        assert_eq!(vint![0x10000000000000000000000000000000].0, [0x10, 0x0f]);
     }
     #[test]
     fn int() {
