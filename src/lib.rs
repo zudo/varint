@@ -452,12 +452,12 @@ mod tests {
             assert_eq!(b - b, vint![0]);
         }
         {
-            let mut a = 2;
+            let mut a = 1;
             a -= vint![1, 2];
             assert_eq!(a, 0);
         }
         {
-            let mut a = vint![2, 2];
+            let mut a = vint![1, 2];
             a -= 1_u128;
             assert_eq!(u128::from(a), 0);
         }
