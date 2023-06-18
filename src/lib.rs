@@ -1,3 +1,11 @@
+use serde::de::SeqAccess;
+use serde::de::Visitor;
+use serde::ser::SerializeTuple;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::Serializer;
+use std::fmt;
 use std::usize;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Varint<const A: usize>(pub [u8; A]);
@@ -46,6 +54,36 @@ impl<const A: usize> Varint<A> {
         Varint::<A>::from(u).u128()
     }
 }
+impl<const A: usize> Serialize for Varint<A> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut seq = serializer.serialize_tuple(A)?;
+        for value in self.0.iter() {
+            seq.serialize_element(value)?;
+        }
+        seq.end()
+    }
+}
+impl<'de, const A: usize> Deserialize<'de> for Varint<A> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Varint<A>, D::Error> {
+        struct VarintVisitor<const A: usize>;
+        impl<'de, const A: usize> Visitor<'de> for VarintVisitor<A> {
+            type Value = Varint<A>;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_fmt(format_args!("a byte array of length {}", A))
+            }
+            fn visit_seq<S: SeqAccess<'de>>(self, mut seq: S) -> Result<Self::Value, S::Error> {
+                let mut array = [0; A];
+                for i in 0..A {
+                    array[i] = seq
+                        .next_element::<u8>()?
+                        .ok_or_else(|| serde::de::Error::invalid_length(i, &"more elements"))?;
+                }
+                Ok(Varint(array))
+            }
+        }
+        deserializer.deserialize_tuple(A, VarintVisitor)
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,6 +117,38 @@ mod tests {
         assert_eq!(
             Varint([0x10, 0x0f]).u128(),
             0x10000000000000000000000000000000
+        );
+    }
+    #[test]
+    fn bincode_serialize() {
+        assert_eq!(bincode::serialize(&Varint([1])).unwrap(), [1]);
+        assert_eq!(bincode::serialize(&Varint([1, 1])).unwrap(), [1, 1]);
+    }
+    #[test]
+    fn bincode_deserialize() {
+        assert_eq!(
+            bincode::deserialize::<Varint<1>>(&vec![1]).unwrap(),
+            Varint([1])
+        );
+        assert_eq!(
+            bincode::deserialize::<Varint<2>>(&vec![1, 1]).unwrap(),
+            Varint([1, 1])
+        );
+    }
+    #[test]
+    fn serde_json_to_string() {
+        assert_eq!(serde_json::to_string(&Varint([1])).unwrap(), "[1]");
+        assert_eq!(serde_json::to_string(&Varint([1, 1])).unwrap(), "[1,1]");
+    }
+    #[test]
+    fn serde_json_from_str() {
+        assert_eq!(
+            serde_json::from_str::<Varint<1>>("[1]").unwrap(),
+            Varint([1])
+        );
+        assert_eq!(
+            serde_json::from_str::<Varint<2>>("[1,1]").unwrap(),
+            Varint([1, 1])
         );
     }
 }

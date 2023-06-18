@@ -6,4 +6,10 @@ fn main() {
     println!("{:?}", varint);
     println!("{}", varint.u128());
     println!("{}", Varint::<4>::floor(u));
+    let varint = Varint([1, 1]);
+    let vec = bincode::serialize(&varint).unwrap();
+    assert_eq!(vec.len(), 2);
+    assert_eq!(varint.0.to_vec(), vec);
+    let varint_2 = bincode::deserialize::<Varint<2>>(&vec);
+    println!("{:?}", varint_2);
 }
