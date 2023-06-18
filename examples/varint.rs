@@ -1,14 +1,17 @@
+use varint::floor;
 use varint::vint;
 use varint::Varint;
 fn main() {
     let a = vint![2u32, 2];
+    let b = floor!(2, 2);
+    println!("{}", b);
     println!("{:?}", a);
     println!("{}", a);
     let u = 1_000_000_000_000_000;
     println!("{}", u);
     let varint = Varint::<4>::new(u);
     println!("{:?}", varint);
-    println!("{}", varint.int());
+    println!("{}", varint);
     println!("{}", Varint::<4>::floor(u));
     let varint = Varint([1, 1]);
     let vec = bincode::serialize(&varint).unwrap();

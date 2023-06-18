@@ -27,6 +27,12 @@ macro_rules! vint {
         Varint::<$size>::new($value as u128)
     }};
 }
+#[macro_export]
+macro_rules! floor {
+    ($value:expr, $size:expr) => {{
+        Varint::<$size>::floor($value as u128)
+    }};
+}
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Varint<const A: usize>(pub [u8; A]);
 impl<const A: usize> Varint<A> {
@@ -224,8 +230,15 @@ mod tests {
     use super::*;
     #[test]
     fn vint() {
+        assert_eq!(vint![0].0, [0]);
+        assert_eq!(vint![0, 1].0, [0]);
         assert_eq!(vint![0], Varint::<1>::new(0));
         assert_eq!(vint![0, 1], Varint::new(0));
+    }
+    #[test]
+    fn floor() {
+        assert_eq!(floor![100, 1], 96);
+        assert_eq!(floor![100, 1], Varint::<1>::floor(100));
     }
     #[test]
     fn new() {
