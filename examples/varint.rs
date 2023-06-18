@@ -6,9 +6,9 @@ fn main() {
     println!("{}", a);
     let u = 1_000_000_000_000_000;
     println!("{}", u);
-    let varint = Varint::<4>::from(u);
+    let varint = Varint::<4>::new(u);
     println!("{:?}", varint);
-    println!("{}", varint.u128());
+    println!("{}", varint.int());
     println!("{}", Varint::<4>::floor(u));
     let varint = Varint([1, 1]);
     let vec = bincode::serialize(&varint).unwrap();
