@@ -8,15 +8,25 @@ use serde::Serializer;
 use std::cmp::Ordering;
 use std::fmt;
 use std::ops::Add;
+use std::ops::AddAssign;
 use std::ops::BitAnd;
+use std::ops::BitAndAssign;
 use std::ops::BitOr;
+use std::ops::BitOrAssign;
 use std::ops::BitXor;
+use std::ops::BitXorAssign;
 use std::ops::Div;
+use std::ops::DivAssign;
 use std::ops::Mul;
+use std::ops::MulAssign;
 use std::ops::Rem;
+use std::ops::RemAssign;
 use std::ops::Shl;
+use std::ops::ShlAssign;
 use std::ops::Shr;
+use std::ops::ShrAssign;
 use std::ops::Sub;
+use std::ops::SubAssign;
 use std::usize;
 #[macro_export]
 macro_rules! vint {
@@ -178,6 +188,56 @@ impl<const A: usize, T: Into<u128>> Shr<T> for Vint<A> {
     type Output = Vint<A>;
     fn shr(self, rhs: T) -> Vint<A> {
         vint![self.int() >> rhs.into()]
+    }
+}
+impl<const A: usize, T: Into<u128>> AddAssign<T> for Vint<A> {
+    fn add_assign(&mut self, rhs: T) {
+        *self = vint![self.int() + rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> SubAssign<T> for Vint<A> {
+    fn sub_assign(&mut self, rhs: T) {
+        *self = vint![self.int() - rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> MulAssign<T> for Vint<A> {
+    fn mul_assign(&mut self, rhs: T) {
+        *self = vint![self.int() * rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> DivAssign<T> for Vint<A> {
+    fn div_assign(&mut self, rhs: T) {
+        *self = vint![self.int() / rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> RemAssign<T> for Vint<A> {
+    fn rem_assign(&mut self, rhs: T) {
+        *self = vint![self.int() % rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> BitAndAssign<T> for Vint<A> {
+    fn bitand_assign(&mut self, rhs: T) {
+        *self = vint![self.int() & rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> BitOrAssign<T> for Vint<A> {
+    fn bitor_assign(&mut self, rhs: T) {
+        *self = vint![self.int() | rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> BitXorAssign<T> for Vint<A> {
+    fn bitxor_assign(&mut self, rhs: T) {
+        *self = vint![self.int() ^ rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> ShlAssign<T> for Vint<A> {
+    fn shl_assign(&mut self, rhs: T) {
+        *self = vint![self.int() << rhs.into()];
+    }
+}
+impl<const A: usize, T: Into<u128>> ShrAssign<T> for Vint<A> {
+    fn shr_assign(&mut self, rhs: T) {
+        *self = vint![self.int() >> rhs.into()];
     }
 }
 impl<const A: usize> PartialOrd for Vint<A> {
