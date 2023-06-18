@@ -1,5 +1,5 @@
-use varint::floor;
-use varint::Varint;
+use vint::floor;
+use vint::Vint;
 fn main() {
     let a = floor![100, 1];
     println!("{}", a);

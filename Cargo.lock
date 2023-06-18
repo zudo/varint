@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "varint"
+name = "vint"
 version = "0.1.0"
 dependencies = [
  "bincode",

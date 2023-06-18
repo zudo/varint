@@ -21,25 +21,25 @@ use std::usize;
 #[macro_export]
 macro_rules! vint {
     ($value:expr) => {{
-        Varint::new($value as u128)
+        Vint::new($value as u128)
     }};
     ($value:expr, $size:expr) => {{
-        Varint::<$size>::new($value as u128)
+        Vint::<$size>::new($value as u128)
     }};
 }
 #[macro_export]
 macro_rules! floor {
     ($value:expr, $size:expr) => {{
-        Varint::<$size>::floor($value as u128)
+        Vint::<$size>::floor($value as u128)
     }};
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct Varint<const A: usize>(pub [u8; A]);
-impl<const A: usize> Varint<A> {
-    pub fn new(u: u128) -> Varint<A> {
-        let mut varint = Varint([0; A]);
+pub struct Vint<const A: usize>(pub [u8; A]);
+impl<const A: usize> Vint<A> {
+    pub fn new(u: u128) -> Vint<A> {
+        let mut vint = Vint([0; A]);
         if u == 0 {
-            return varint;
+            return vint;
         }
         let bytes = u.to_be_bytes();
         let mut i = 0;
@@ -50,15 +50,15 @@ impl<const A: usize> Varint<A> {
             i += 1;
         }
         let size = 15 - i;
-        for (j, v) in varint.0.iter_mut().enumerate().take(A) {
+        for (j, v) in vint.0.iter_mut().enumerate().take(A) {
             let k = i + j;
             if k == 16 {
                 break;
             }
             *v = bytes[k];
         }
-        varint.0[A - 1] = (varint.0[A - 1] & 0xf0) | size as u8;
-        varint
+        vint.0[A - 1] = (vint.0[A - 1] & 0xf0) | size as u8;
+        vint
     }
     pub fn int(self) -> u128 {
         let size = self.0[A - 1] as usize & 0x0f;
@@ -80,122 +80,122 @@ impl<const A: usize> Varint<A> {
         vint![u, A].int()
     }
 }
-impl<const A: usize> From<u128> for Varint<A> {
+impl<const A: usize> From<u128> for Vint<A> {
     fn from(value: u128) -> Self {
         vint![value]
     }
 }
-impl<const A: usize> From<Varint<A>> for u128 {
-    fn from(value: Varint<A>) -> Self {
+impl<const A: usize> From<Vint<A>> for u128 {
+    fn from(value: Vint<A>) -> Self {
         value.int()
     }
 }
-impl<const A: usize> Add<Varint<A>> for u128 {
-    type Output = Varint<A>;
-    fn add(self, other: Varint<A>) -> Varint<A> {
+impl<const A: usize> Add<Vint<A>> for u128 {
+    type Output = Vint<A>;
+    fn add(self, other: Vint<A>) -> Vint<A> {
         vint![self + other.int()]
     }
 }
-impl<const A: usize> Sub<Varint<A>> for u128 {
-    type Output = Varint<A>;
-    fn sub(self, other: Varint<A>) -> Varint<A> {
+impl<const A: usize> Sub<Vint<A>> for u128 {
+    type Output = Vint<A>;
+    fn sub(self, other: Vint<A>) -> Vint<A> {
         vint![self - other.int()]
     }
 }
-impl<const A: usize> Mul<Varint<A>> for u128 {
-    type Output = Varint<A>;
-    fn mul(self, other: Varint<A>) -> Varint<A> {
+impl<const A: usize> Mul<Vint<A>> for u128 {
+    type Output = Vint<A>;
+    fn mul(self, other: Vint<A>) -> Vint<A> {
         vint![self * other.int()]
     }
 }
-impl<const A: usize> Div<Varint<A>> for u128 {
-    type Output = Varint<A>;
-    fn div(self, other: Varint<A>) -> Varint<A> {
+impl<const A: usize> Div<Vint<A>> for u128 {
+    type Output = Vint<A>;
+    fn div(self, other: Vint<A>) -> Vint<A> {
         vint![self / other.int()]
     }
 }
-impl<const A: usize> Rem<Varint<A>> for u128 {
-    type Output = Varint<A>;
-    fn rem(self, other: Varint<A>) -> Varint<A> {
+impl<const A: usize> Rem<Vint<A>> for u128 {
+    type Output = Vint<A>;
+    fn rem(self, other: Vint<A>) -> Vint<A> {
         vint![self % other.int()]
     }
 }
-impl<const A: usize, T: Into<u128>> Add<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn add(self, other: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Add<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn add(self, other: T) -> Vint<A> {
         vint![self.int() + other.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> Sub<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn sub(self, other: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Sub<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn sub(self, other: T) -> Vint<A> {
         vint![self.int() - other.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> Mul<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn mul(self, other: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Mul<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn mul(self, other: T) -> Vint<A> {
         vint![self.int() * other.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> Div<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn div(self, other: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Div<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn div(self, other: T) -> Vint<A> {
         vint![self.int() / other.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> Rem<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn rem(self, other: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Rem<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn rem(self, other: T) -> Vint<A> {
         vint![self.int() % other.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> BitAnd<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn bitand(self, rhs: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> BitAnd<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn bitand(self, rhs: T) -> Vint<A> {
         vint![self.int() & rhs.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> BitOr<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn bitor(self, rhs: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> BitOr<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn bitor(self, rhs: T) -> Vint<A> {
         vint![self.int() | rhs.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> BitXor<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn bitxor(self, rhs: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> BitXor<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn bitxor(self, rhs: T) -> Vint<A> {
         vint![self.int() ^ rhs.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> Shl<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn shl(self, rhs: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Shl<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn shl(self, rhs: T) -> Vint<A> {
         vint![self.int() << rhs.into()]
     }
 }
-impl<const A: usize, T: Into<u128>> Shr<T> for Varint<A> {
-    type Output = Varint<A>;
-    fn shr(self, rhs: T) -> Varint<A> {
+impl<const A: usize, T: Into<u128>> Shr<T> for Vint<A> {
+    type Output = Vint<A>;
+    fn shr(self, rhs: T) -> Vint<A> {
         vint![self.int() >> rhs.into()]
     }
 }
-impl<const A: usize> PartialOrd for Varint<A> {
-    fn partial_cmp(&self, other: &Varint<A>) -> Option<Ordering> {
+impl<const A: usize> PartialOrd for Vint<A> {
+    fn partial_cmp(&self, other: &Vint<A>) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
-impl<const A: usize> Ord for Varint<A> {
-    fn cmp(&self, other: &Varint<A>) -> Ordering {
+impl<const A: usize> Ord for Vint<A> {
+    fn cmp(&self, other: &Vint<A>) -> Ordering {
         self.int().cmp(&other.int())
     }
 }
-impl<const A: usize> fmt::Display for Varint<A> {
+impl<const A: usize> fmt::Display for Vint<A> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.int())
     }
 }
-impl<const A: usize> Serialize for Varint<A> {
+impl<const A: usize> Serialize for Vint<A> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let mut seq = serializer.serialize_tuple(A)?;
         for value in self.0.iter() {
@@ -204,11 +204,11 @@ impl<const A: usize> Serialize for Varint<A> {
         seq.end()
     }
 }
-impl<'de, const A: usize> Deserialize<'de> for Varint<A> {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Varint<A>, D::Error> {
-        struct VarintVisitor<const A: usize>;
-        impl<'de, const A: usize> Visitor<'de> for VarintVisitor<A> {
-            type Value = Varint<A>;
+impl<'de, const A: usize> Deserialize<'de> for Vint<A> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Vint<A>, D::Error> {
+        struct VintVisitor<const A: usize>;
+        impl<'de, const A: usize> Visitor<'de> for VintVisitor<A> {
+            type Value = Vint<A>;
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
                 formatter.write_fmt(format_args!("a byte array of length {}", A))
             }
@@ -219,10 +219,10 @@ impl<'de, const A: usize> Deserialize<'de> for Varint<A> {
                         .next_element::<u8>()?
                         .ok_or_else(|| serde::de::Error::invalid_length(i, &"more elements"))?;
                 }
-                Ok(Varint(array))
+                Ok(Vint(array))
             }
         }
-        deserializer.deserialize_tuple(A, VarintVisitor)
+        deserializer.deserialize_tuple(A, VintVisitor)
     }
 }
 #[cfg(test)]
@@ -232,13 +232,13 @@ mod tests {
     fn vint() {
         assert_eq!(vint![0].0, [0]);
         assert_eq!(vint![0, 1].0, [0]);
-        assert_eq!(vint![0], Varint::<1>::new(0));
-        assert_eq!(vint![0, 1], Varint::new(0));
+        assert_eq!(vint![0], Vint::<1>::new(0));
+        assert_eq!(vint![0, 1], Vint::new(0));
     }
     #[test]
     fn floor() {
         assert_eq!(floor![100, 1], 96);
-        assert_eq!(floor![100, 1], Varint::<1>::floor(100));
+        assert_eq!(floor![100, 1], Vint::<1>::floor(100));
     }
     #[test]
     fn new() {
@@ -255,50 +255,44 @@ mod tests {
     }
     #[test]
     fn int() {
-        assert_eq!(Varint([0x00]).int(), 0x00);
-        assert_eq!(Varint([0x01]).int(), 0x00);
-        assert_eq!(Varint([0x10]).int(), 0x10);
-        assert_eq!(Varint([0x11]).int(), 0x1000);
-        assert_eq!(Varint([0x1f]).int(), 0x10000000000000000000000000000000);
-        assert_eq!(Varint([0x00, 0x00]).int(), 0x00);
-        assert_eq!(Varint([0x01, 0x00]).int(), 0x01);
-        assert_eq!(Varint([0x10, 0x00]).int(), 0x10);
-        assert_eq!(Varint([0x11, 0x00]).int(), 0x11);
-        assert_eq!(
-            Varint([0x10, 0x0f]).int(),
-            0x10000000000000000000000000000000
-        );
+        assert_eq!(Vint([0x00]).int(), 0x00);
+        assert_eq!(Vint([0x01]).int(), 0x00);
+        assert_eq!(Vint([0x10]).int(), 0x10);
+        assert_eq!(Vint([0x11]).int(), 0x1000);
+        assert_eq!(Vint([0x1f]).int(), 0x10000000000000000000000000000000);
+        assert_eq!(Vint([0x00, 0x00]).int(), 0x00);
+        assert_eq!(Vint([0x01, 0x00]).int(), 0x01);
+        assert_eq!(Vint([0x10, 0x00]).int(), 0x10);
+        assert_eq!(Vint([0x11, 0x00]).int(), 0x11);
+        assert_eq!(Vint([0x10, 0x0f]).int(), 0x10000000000000000000000000000000);
     }
     #[test]
     fn bincode_serialize() {
-        assert_eq!(bincode::serialize(&Varint([1])).unwrap(), [1]);
-        assert_eq!(bincode::serialize(&Varint([1, 1])).unwrap(), [1, 1]);
+        assert_eq!(bincode::serialize(&Vint([1])).unwrap(), [1]);
+        assert_eq!(bincode::serialize(&Vint([1, 1])).unwrap(), [1, 1]);
     }
     #[test]
     fn bincode_deserialize() {
         assert_eq!(
-            bincode::deserialize::<Varint<1>>(&vec![1]).unwrap(),
-            Varint([1])
+            bincode::deserialize::<Vint<1>>(&vec![1]).unwrap(),
+            Vint([1])
         );
         assert_eq!(
-            bincode::deserialize::<Varint<2>>(&vec![1, 1]).unwrap(),
-            Varint([1, 1])
+            bincode::deserialize::<Vint<2>>(&vec![1, 1]).unwrap(),
+            Vint([1, 1])
         );
     }
     #[test]
     fn serde_json_to_string() {
-        assert_eq!(serde_json::to_string(&Varint([1])).unwrap(), "[1]");
-        assert_eq!(serde_json::to_string(&Varint([1, 1])).unwrap(), "[1,1]");
+        assert_eq!(serde_json::to_string(&Vint([1])).unwrap(), "[1]");
+        assert_eq!(serde_json::to_string(&Vint([1, 1])).unwrap(), "[1,1]");
     }
     #[test]
     fn serde_json_from_str() {
+        assert_eq!(serde_json::from_str::<Vint<1>>("[1]").unwrap(), Vint([1]));
         assert_eq!(
-            serde_json::from_str::<Varint<1>>("[1]").unwrap(),
-            Varint([1])
-        );
-        assert_eq!(
-            serde_json::from_str::<Varint<2>>("[1,1]").unwrap(),
-            Varint([1, 1])
+            serde_json::from_str::<Vint<2>>("[1,1]").unwrap(),
+            Vint([1, 1])
         );
     }
     #[test]
@@ -337,16 +331,16 @@ mod tests {
     fn rem() {
         let a: u128 = 4;
         let b = vint![a, 2];
-        assert_eq!(a % b, Varint::from(0));
-        assert_eq!(b % a, Varint::from(0));
-        assert_eq!(b % b, Varint::from(0));
+        assert_eq!(a % b, Vint::from(0));
+        assert_eq!(b % a, Vint::from(0));
+        assert_eq!(b % b, Vint::from(0));
     }
     #[test]
     fn bit() {
         let a: u128 = 1;
         let b = vint![a, 2];
-        assert_eq!(b | a, Varint::from(1));
-        assert_eq!(b & a, Varint::from(1));
-        assert_eq!(b ^ a, Varint::from(0));
+        assert_eq!(b | a, Vint::from(1));
+        assert_eq!(b & a, Vint::from(1));
+        assert_eq!(b ^ a, Vint::from(0));
     }
 }

@@ -1,7 +1,7 @@
-# Varint
+# Vint
 
-[![Rust](https://github.com/zudo/varint/actions/workflows/rust.yml/badge.svg)](https://github.com/zudo/varint/actions/workflows/rust.yml)
-[![dependency status](https://deps.rs/repo/github/zudo/varint/status.svg)](https://deps.rs/repo/github/zudo/varint)
+[![Rust](https://github.com/zudo/vint/actions/workflows/rust.yml/badge.svg)](https://github.com/zudo/vint/actions/workflows/rust.yml)
+[![dependency status](https://deps.rs/repo/github/zudo/vint/status.svg)](https://deps.rs/repo/github/zudo/vint)
 
 Variable sized unsigned integers using scientific notation.
 
@@ -10,7 +10,7 @@ Variable sized unsigned integers using scientific notation.
 Add the following line to your `Cargo.toml`.
 
 ```toml
-varint = { git = "https://github.com/zudo/varint" }
+vint = { git = "https://github.com/zudo/vint" }
 ```
 
 View [examples](examples) on how to use the library.
