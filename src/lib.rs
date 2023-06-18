@@ -5,11 +5,17 @@ use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
+use std::cmp::Ordering;
 use std::fmt;
 use std::ops::Add;
+use std::ops::BitAnd;
+use std::ops::BitOr;
+use std::ops::BitXor;
 use std::ops::Div;
 use std::ops::Mul;
 use std::ops::Rem;
+use std::ops::Shl;
+use std::ops::Shr;
 use std::ops::Sub;
 use std::usize;
 #[macro_export]
@@ -106,6 +112,46 @@ impl<const A: usize, T: Into<u128>> Rem<T> for Varint<A> {
     type Output = Varint<A>;
     fn rem(self, other: T) -> Varint<A> {
         vint![self.int() % other.into()]
+    }
+}
+impl<const A: usize, T: Into<u128>> BitAnd<T> for Varint<A> {
+    type Output = Varint<A>;
+    fn bitand(self, rhs: T) -> Varint<A> {
+        vint![self.int() & rhs.into()]
+    }
+}
+impl<const A: usize, T: Into<u128>> BitOr<T> for Varint<A> {
+    type Output = Varint<A>;
+    fn bitor(self, rhs: T) -> Varint<A> {
+        vint![self.int() | rhs.into()]
+    }
+}
+impl<const A: usize, T: Into<u128>> BitXor<T> for Varint<A> {
+    type Output = Varint<A>;
+    fn bitxor(self, rhs: T) -> Varint<A> {
+        vint![self.int() ^ rhs.into()]
+    }
+}
+impl<const A: usize, T: Into<u128>> Shl<T> for Varint<A> {
+    type Output = Varint<A>;
+    fn shl(self, rhs: T) -> Varint<A> {
+        vint![self.int() << rhs.into()]
+    }
+}
+impl<const A: usize, T: Into<u128>> Shr<T> for Varint<A> {
+    type Output = Varint<A>;
+    fn shr(self, rhs: T) -> Varint<A> {
+        vint![self.int() >> rhs.into()]
+    }
+}
+impl<const A: usize> PartialOrd for Varint<A> {
+    fn partial_cmp(&self, other: &Varint<A>) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl<const A: usize> Ord for Varint<A> {
+    fn cmp(&self, other: &Varint<A>) -> Ordering {
+        self.int().cmp(&other.int())
     }
 }
 impl<const A: usize> fmt::Display for Varint<A> {
