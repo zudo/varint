@@ -92,62 +92,62 @@ impl<const A: usize> From<Vint<A>> for u128 {
 }
 impl<const A: usize> Add<Vint<A>> for u128 {
     type Output = Vint<A>;
-    fn add(self, other: Vint<A>) -> Vint<A> {
-        vint![self + other.int()]
+    fn add(self, rhs: Vint<A>) -> Vint<A> {
+        vint![self + rhs.int()]
     }
 }
 impl<const A: usize> Sub<Vint<A>> for u128 {
     type Output = Vint<A>;
-    fn sub(self, other: Vint<A>) -> Vint<A> {
-        vint![self - other.int()]
+    fn sub(self, rhs: Vint<A>) -> Vint<A> {
+        vint![self - rhs.int()]
     }
 }
 impl<const A: usize> Mul<Vint<A>> for u128 {
     type Output = Vint<A>;
-    fn mul(self, other: Vint<A>) -> Vint<A> {
-        vint![self * other.int()]
+    fn mul(self, rhs: Vint<A>) -> Vint<A> {
+        vint![self * rhs.int()]
     }
 }
 impl<const A: usize> Div<Vint<A>> for u128 {
     type Output = Vint<A>;
-    fn div(self, other: Vint<A>) -> Vint<A> {
-        vint![self / other.int()]
+    fn div(self, rhs: Vint<A>) -> Vint<A> {
+        vint![self / rhs.int()]
     }
 }
 impl<const A: usize> Rem<Vint<A>> for u128 {
     type Output = Vint<A>;
-    fn rem(self, other: Vint<A>) -> Vint<A> {
-        vint![self % other.int()]
+    fn rem(self, rhs: Vint<A>) -> Vint<A> {
+        vint![self % rhs.int()]
     }
 }
 impl<const A: usize, T: Into<u128>> Add<T> for Vint<A> {
     type Output = Vint<A>;
-    fn add(self, other: T) -> Vint<A> {
-        vint![self.int() + other.into()]
+    fn add(self, rhs: T) -> Vint<A> {
+        vint![self.int() + rhs.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Sub<T> for Vint<A> {
     type Output = Vint<A>;
-    fn sub(self, other: T) -> Vint<A> {
-        vint![self.int() - other.into()]
+    fn sub(self, rhs: T) -> Vint<A> {
+        vint![self.int() - rhs.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Mul<T> for Vint<A> {
     type Output = Vint<A>;
-    fn mul(self, other: T) -> Vint<A> {
-        vint![self.int() * other.into()]
+    fn mul(self, rhs: T) -> Vint<A> {
+        vint![self.int() * rhs.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Div<T> for Vint<A> {
     type Output = Vint<A>;
-    fn div(self, other: T) -> Vint<A> {
-        vint![self.int() / other.into()]
+    fn div(self, rhs: T) -> Vint<A> {
+        vint![self.int() / rhs.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> Rem<T> for Vint<A> {
     type Output = Vint<A>;
-    fn rem(self, other: T) -> Vint<A> {
-        vint![self.int() % other.into()]
+    fn rem(self, rhs: T) -> Vint<A> {
+        vint![self.int() % rhs.into()]
     }
 }
 impl<const A: usize, T: Into<u128>> BitAnd<T> for Vint<A> {
@@ -181,13 +181,13 @@ impl<const A: usize, T: Into<u128>> Shr<T> for Vint<A> {
     }
 }
 impl<const A: usize> PartialOrd for Vint<A> {
-    fn partial_cmp(&self, other: &Vint<A>) -> Option<Ordering> {
-        Some(self.cmp(other))
+    fn partial_cmp(&self, rhs: &Vint<A>) -> Option<Ordering> {
+        Some(self.cmp(rhs))
     }
 }
 impl<const A: usize> Ord for Vint<A> {
-    fn cmp(&self, other: &Vint<A>) -> Ordering {
-        self.int().cmp(&other.int())
+    fn cmp(&self, rhs: &Vint<A>) -> Ordering {
+        self.int().cmp(&rhs.int())
     }
 }
 impl<const A: usize> fmt::Display for Vint<A> {
