@@ -1,5 +1,9 @@
+use varint::vint;
 use varint::Varint;
 fn main() {
+    let a = vint![2u32, 2];
+    println!("{:?}", a);
+    println!("{}", a);
     let u = 1_000_000_000_000_000;
     println!("{}", u);
     let varint = Varint::<4>::from(u);

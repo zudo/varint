@@ -5,6 +5,7 @@ use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
+use std::cmp::Ordering;
 use std::fmt;
 use std::ops::Add;
 use std::ops::Div;
@@ -12,6 +13,12 @@ use std::ops::Mul;
 use std::ops::Rem;
 use std::ops::Sub;
 use std::usize;
+#[macro_export]
+macro_rules! vint {
+    ($value:expr, $size:expr) => {{
+        Varint::<$size>::from($value as u128)
+    }};
+}
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Varint<const A: usize>(pub [u8; A]);
 impl<const A: usize> Varint<A> {
@@ -59,6 +66,11 @@ impl<const A: usize> Varint<A> {
         Varint::<A>::from(u).u128()
     }
 }
+impl<const A: usize> fmt::Display for Varint<A> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.u128())
+    }
+}
 impl<const A: usize> Serialize for Varint<A> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let mut seq = serializer.serialize_tuple(A)?;
@@ -89,6 +101,26 @@ impl<'de, const A: usize> Deserialize<'de> for Varint<A> {
         deserializer.deserialize_tuple(A, VarintVisitor)
     }
 }
+impl<const A: usize> PartialEq<u128> for Varint<A> {
+    fn eq(&self, other: &u128) -> bool {
+        self.u128() == *other
+    }
+}
+impl<const A: usize> PartialOrd<u128> for Varint<A> {
+    fn partial_cmp(&self, other: &u128) -> Option<Ordering> {
+        self.u128().partial_cmp(other)
+    }
+}
+impl<const A: usize> PartialEq<Varint<A>> for u128 {
+    fn eq(&self, other: &Varint<A>) -> bool {
+        *self == other.u128()
+    }
+}
+impl<const A: usize> PartialOrd<Varint<A>> for u128 {
+    fn partial_cmp(&self, other: &Varint<A>) -> Option<Ordering> {
+        self.partial_cmp(&other.u128())
+    }
+}
 impl<const A: usize> Add for Varint<A> {
     type Output = Varint<A>;
     fn add(self, other: Varint<A>) -> Varint<A> {
@@ -117,6 +149,36 @@ impl<const A: usize> Rem for Varint<A> {
     type Output = Varint<A>;
     fn rem(self, other: Varint<A>) -> Varint<A> {
         Varint::from(self.u128() % other.u128())
+    }
+}
+impl<const A: usize> Add<u128> for Varint<A> {
+    type Output = Varint<A>;
+    fn add(self, other: u128) -> Varint<A> {
+        Varint::from(self.u128() + other)
+    }
+}
+impl<const A: usize> Sub<u128> for Varint<A> {
+    type Output = Varint<A>;
+    fn sub(self, other: u128) -> Varint<A> {
+        Varint::from(self.u128() - other)
+    }
+}
+impl<const A: usize> Mul<u128> for Varint<A> {
+    type Output = Varint<A>;
+    fn mul(self, other: u128) -> Varint<A> {
+        Varint::from(self.u128() * other)
+    }
+}
+impl<const A: usize> Div<u128> for Varint<A> {
+    type Output = Varint<A>;
+    fn div(self, other: u128) -> Varint<A> {
+        Varint::from(self.u128() / other)
+    }
+}
+impl<const A: usize> Rem<u128> for Varint<A> {
+    type Output = Varint<A>;
+    fn rem(self, other: u128) -> Varint<A> {
+        Varint::from(self.u128() % other)
     }
 }
 #[cfg(test)]
@@ -210,5 +272,6 @@ mod tests {
     fn rem() {
         let a = Varint::<2>::from(4);
         assert_eq!(a % a, Varint::from(0));
+        assert_eq!(a % 2, 0);
     }
 }
