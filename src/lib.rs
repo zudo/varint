@@ -426,7 +426,7 @@ mod tests {
     fn add() {
         {
             let a = 1;
-            let b = vint![a, 2];
+            let b = vint![1, 2];
             assert_eq!(a + b, vint![2]);
             assert_eq!(b + a, vint![2]);
             assert_eq!(b + b, vint![2]);
@@ -445,8 +445,8 @@ mod tests {
     #[test]
     fn sub() {
         {
-            let a = 2;
-            let b = vint![a, 2];
+            let a = 1;
+            let b = vint![1, 2];
             assert_eq!(a - b, vint![0]);
             assert_eq!(b - a, vint![0]);
             assert_eq!(b - b, vint![0]);
@@ -466,7 +466,7 @@ mod tests {
     fn mul() {
         {
             let a = 2;
-            let b = vint![a, 2];
+            let b = vint![2, 2];
             assert_eq!(a * b, vint![4]);
             assert_eq!(b * a, vint![4]);
             assert_eq!(b * b, vint![4]);
@@ -486,7 +486,7 @@ mod tests {
     fn div() {
         {
             let a = 2;
-            let b = vint![a, 2];
+            let b = vint![2, 2];
             assert_eq!(a / b, vint![1]);
             assert_eq!(b / a, vint![1]);
             assert_eq!(b / b, vint![1]);
@@ -506,7 +506,7 @@ mod tests {
     fn rem() {
         {
             let a = 2;
-            let b = vint![a, 2];
+            let b = vint![2, 2];
             assert_eq!(a % b, Vint::from(0));
             assert_eq!(b % a, Vint::from(0));
             assert_eq!(b % b, Vint::from(0));
