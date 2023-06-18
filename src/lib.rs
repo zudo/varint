@@ -6,6 +6,11 @@ use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
 use std::fmt;
+use std::ops::Add;
+use std::ops::Div;
+use std::ops::Mul;
+use std::ops::Rem;
+use std::ops::Sub;
 use std::usize;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Varint<const A: usize>(pub [u8; A]);
@@ -84,6 +89,36 @@ impl<'de, const A: usize> Deserialize<'de> for Varint<A> {
         deserializer.deserialize_tuple(A, VarintVisitor)
     }
 }
+impl<const A: usize> Add for Varint<A> {
+    type Output = Varint<A>;
+    fn add(self, other: Varint<A>) -> Varint<A> {
+        Varint::from(self.u128() + other.u128())
+    }
+}
+impl<const A: usize> Sub for Varint<A> {
+    type Output = Varint<A>;
+    fn sub(self, other: Varint<A>) -> Varint<A> {
+        Varint::from(self.u128() - other.u128())
+    }
+}
+impl<const A: usize> Mul for Varint<A> {
+    type Output = Varint<A>;
+    fn mul(self, other: Varint<A>) -> Varint<A> {
+        Varint::from(self.u128() * other.u128())
+    }
+}
+impl<const A: usize> Div for Varint<A> {
+    type Output = Varint<A>;
+    fn div(self, other: Varint<A>) -> Varint<A> {
+        Varint::from(self.u128() / other.u128())
+    }
+}
+impl<const A: usize> Rem for Varint<A> {
+    type Output = Varint<A>;
+    fn rem(self, other: Varint<A>) -> Varint<A> {
+        Varint::from(self.u128() % other.u128())
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -150,5 +185,30 @@ mod tests {
             serde_json::from_str::<Varint<2>>("[1,1]").unwrap(),
             Varint([1, 1])
         );
+    }
+    #[test]
+    fn add() {
+        let a = Varint::<2>::from(1);
+        assert_eq!(a + a, Varint::from(2));
+    }
+    #[test]
+    fn sub() {
+        let a = Varint::<2>::from(2);
+        assert_eq!(a - a, Varint::from(0));
+    }
+    #[test]
+    fn mul() {
+        let a = Varint::<2>::from(2);
+        assert_eq!(a * a, Varint::from(4));
+    }
+    #[test]
+    fn div() {
+        let a = Varint::<2>::from(4);
+        assert_eq!(a / a, Varint::from(1));
+    }
+    #[test]
+    fn rem() {
+        let a = Varint::<2>::from(4);
+        assert_eq!(a % a, Varint::from(0));
     }
 }
