@@ -5,7 +5,6 @@ use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
-use std::cmp::Ordering;
 use std::fmt;
 use std::ops::Add;
 use std::ops::AddAssign;
@@ -43,7 +42,7 @@ macro_rules! floor {
         Vint::<$size>::floor($value as u128)
     }};
 }
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Vint<const A: usize>(pub [u8; A]);
 impl<const A: usize> Vint<A> {
     pub fn new(u: u128) -> Vint<A> {
@@ -318,16 +317,6 @@ impl<const A: usize, T: Into<u128>> ShlAssign<T> for Vint<A> {
 impl<const A: usize, T: Into<u128>> ShrAssign<T> for Vint<A> {
     fn shr_assign(&mut self, rhs: T) {
         *self = vint![self.int() >> rhs.into()];
-    }
-}
-impl<const A: usize> PartialOrd for Vint<A> {
-    fn partial_cmp(&self, rhs: &Vint<A>) -> Option<Ordering> {
-        Some(self.cmp(rhs))
-    }
-}
-impl<const A: usize> Ord for Vint<A> {
-    fn cmp(&self, rhs: &Vint<A>) -> Ordering {
-        self.int().cmp(&rhs.int())
     }
 }
 impl<const A: usize> fmt::Display for Vint<A> {
