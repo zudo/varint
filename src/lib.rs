@@ -84,6 +84,36 @@ impl<const A: usize> From<Varint<A>> for u128 {
         value.int()
     }
 }
+impl<const A: usize> Add<Varint<A>> for u128 {
+    type Output = Varint<A>;
+    fn add(self, other: Varint<A>) -> Varint<A> {
+        vint![self + other.int()]
+    }
+}
+impl<const A: usize> Sub<Varint<A>> for u128 {
+    type Output = Varint<A>;
+    fn sub(self, other: Varint<A>) -> Varint<A> {
+        vint![self - other.int()]
+    }
+}
+impl<const A: usize> Mul<Varint<A>> for u128 {
+    type Output = Varint<A>;
+    fn mul(self, other: Varint<A>) -> Varint<A> {
+        vint![self * other.int()]
+    }
+}
+impl<const A: usize> Div<Varint<A>> for u128 {
+    type Output = Varint<A>;
+    fn div(self, other: Varint<A>) -> Varint<A> {
+        vint![self / other.int()]
+    }
+}
+impl<const A: usize> Rem<Varint<A>> for u128 {
+    type Output = Varint<A>;
+    fn rem(self, other: Varint<A>) -> Varint<A> {
+        vint![self % other.int()]
+    }
+}
 impl<const A: usize, T: Into<u128>> Add<T> for Varint<A> {
     type Output = Varint<A>;
     fn add(self, other: T) -> Varint<A> {
@@ -263,27 +293,42 @@ mod tests {
     }
     #[test]
     fn add() {
-        let a = vint![1, 2];
-        assert_eq!(a + a, vint![2]);
+        let a = 1;
+        let b = vint![a, 2];
+        assert_eq!(a + b, vint![2]);
+        assert_eq!(b + a, vint![2]);
+        assert_eq!(b + b, vint![2]);
     }
     #[test]
     fn sub() {
-        let a = vint![2, 2];
-        assert_eq!(a - a, vint![0]);
+        let a = 2;
+        let b = vint![a, 2];
+        assert_eq!(a - b, vint![0]);
+        assert_eq!(b - a, vint![0]);
+        assert_eq!(b - b, vint![0]);
     }
     #[test]
     fn mul() {
-        let a = vint![2, 2];
-        assert_eq!(a * a, vint![4]);
+        let a = 2;
+        let b = vint![a, 2];
+        assert_eq!(a * b, vint![4]);
+        assert_eq!(b * a, vint![4]);
+        assert_eq!(b * b, vint![4]);
     }
     #[test]
     fn div() {
-        let a = vint![4, 2];
-        assert_eq!(a / a, vint![1]);
+        let a = 4;
+        let b = vint![a, 2];
+        assert_eq!(a / b, vint![1]);
+        assert_eq!(b / a, vint![1]);
+        assert_eq!(b / b, vint![1]);
     }
     #[test]
     fn rem() {
-        let a = vint![4, 2];
-        assert_eq!(a % a, Varint::from(0));
+        let a: u128 = 4;
+        let b = vint![a, 2];
+        assert_eq!(a % b, Varint::from(0));
+        assert_eq!(b % a, Varint::from(0));
+        assert_eq!(b % b, Varint::from(0));
     }
 }
