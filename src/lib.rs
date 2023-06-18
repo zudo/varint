@@ -44,11 +44,13 @@ macro_rules! floor {
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Vint<const A: usize>(pub [u8; A]);
+// display
 impl<const A: usize> fmt::Display for Vint<A> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", u128::from(*self))
     }
 }
+// serde
 impl<const A: usize> Serialize for Vint<A> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let mut seq = serializer.serialize_tuple(A)?;
@@ -79,6 +81,7 @@ impl<'de, const A: usize> Deserialize<'de> for Vint<A> {
         deserializer.deserialize_tuple(A, VintVisitor)
     }
 }
+// from
 impl<const A: usize> From<Vint<A>> for u128 {
     fn from(vint: Vint<A>) -> Self {
         let size = vint.0[A - 1] as usize & 0x0f;
@@ -123,6 +126,7 @@ impl<const A: usize> From<u128> for Vint<A> {
         vint
     }
 }
+// add
 impl<const A: usize> Add<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn add(self, rhs: Vint<A>) -> Vint<A> {
@@ -145,6 +149,7 @@ impl<const A: usize, T: Into<u128>> AddAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) + rhs.into()];
     }
 }
+// sub
 impl<const A: usize> Sub<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn sub(self, rhs: Vint<A>) -> Vint<A> {
@@ -167,6 +172,7 @@ impl<const A: usize, T: Into<u128>> SubAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) - rhs.into()];
     }
 }
+// mul
 impl<const A: usize> Mul<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn mul(self, rhs: Vint<A>) -> Vint<A> {
@@ -189,6 +195,7 @@ impl<const A: usize, T: Into<u128>> MulAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) * rhs.into()];
     }
 }
+// div
 impl<const A: usize> Div<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn div(self, rhs: Vint<A>) -> Vint<A> {
@@ -211,6 +218,7 @@ impl<const A: usize, T: Into<u128>> DivAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) / rhs.into()];
     }
 }
+// rem
 impl<const A: usize> Rem<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn rem(self, rhs: Vint<A>) -> Vint<A> {
@@ -233,6 +241,7 @@ impl<const A: usize, T: Into<u128>> RemAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) % rhs.into()];
     }
 }
+// bitand
 impl<const A: usize> BitAnd<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn bitand(self, rhs: Vint<A>) -> Vint<A> {
@@ -255,6 +264,7 @@ impl<const A: usize, T: Into<u128>> BitAndAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) & rhs.into()];
     }
 }
+// bitor
 impl<const A: usize> BitOr<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn bitor(self, rhs: Vint<A>) -> Vint<A> {
@@ -277,6 +287,7 @@ impl<const A: usize, T: Into<u128>> BitOrAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) | rhs.into()];
     }
 }
+// bitxor
 impl<const A: usize> BitXor<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn bitxor(self, rhs: Vint<A>) -> Vint<A> {
@@ -299,6 +310,7 @@ impl<const A: usize, T: Into<u128>> BitXorAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) ^ rhs.into()];
     }
 }
+// shl
 impl<const A: usize> Shl<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn shl(self, rhs: Vint<A>) -> Vint<A> {
@@ -321,6 +333,7 @@ impl<const A: usize, T: Into<u128>> ShlAssign<T> for Vint<A> {
         *self = vint![u128::from(*self) << rhs.into()];
     }
 }
+// shr
 impl<const A: usize> Shr<Vint<A>> for u128 {
     type Output = Vint<A>;
     fn shr(self, rhs: Vint<A>) -> Vint<A> {
