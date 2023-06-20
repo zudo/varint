@@ -384,12 +384,9 @@ mod tests {
     }
     #[test]
     fn bincode_deserialize() {
+        assert_eq!(bincode::deserialize::<Vint<1>>(&[1]).unwrap(), Vint([1]));
         assert_eq!(
-            bincode::deserialize::<Vint<1>>(&vec![1]).unwrap(),
-            Vint([1])
-        );
-        assert_eq!(
-            bincode::deserialize::<Vint<2>>(&vec![1, 1]).unwrap(),
+            bincode::deserialize::<Vint<2>>(&[1, 1]).unwrap(),
             Vint([1, 1])
         );
     }
