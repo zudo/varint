@@ -44,6 +44,12 @@ macro_rules! floor {
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Vint<const A: usize>(pub [u8; A]);
+// default
+impl<const A: usize> Default for Vint<A> {
+    fn default() -> Vint<A> {
+        Vint([0; A])
+    }
+}
 // display
 impl<const A: usize> fmt::Display for Vint<A> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -518,5 +524,11 @@ mod tests {
             a %= 2_u128;
             assert_eq!(u128::from(a), 0);
         }
+    }
+    #[test]
+    fn default() {
+        assert_eq!(Vint::default(), Vint([]));
+        assert_eq!(Vint::default(), Vint([0]));
+        assert_eq!(Vint::default(), Vint([0, 0]));
     }
 }
